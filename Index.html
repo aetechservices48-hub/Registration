@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Registration</title>
-  <link rel="icon" href="ae.ico" type="image/x-icon">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>⚡ AE Sales Monitoring Registration</title>
+  <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/aetechservices48-hub/PICTURE/refs/heads/main/ae.ico">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <style>
     body {
@@ -39,38 +39,28 @@
       color: #cdd9f3;
       margin-bottom: 30px;
     }
-    form { display: grid; gap: 20px; }
-    label {
-      font-size: 14px;
-      color: #e2e8f0;
-      margin-bottom: 6px;
-      display: block;
-      font-weight: 500;
-    }
     .row { display: flex; gap: 20px; }
     .row > div { flex: 1; }
-    input, textarea {
+    input {
       width: 100%;
       padding: 14px 16px;
       border: 1px solid rgba(255, 255, 255, 0.3);
       border-radius: 14px;
       font-size: 15px;
-      outline: none;
       background: rgba(255, 255, 255, 0.1);
       color: #fff;
       transition: 0.3s;
       box-sizing: border-box;
     }
-    input:focus, textarea:focus {
+    input:focus {
       border-color: #6dd5ed;
       box-shadow: 0 0 0 4px rgba(109, 213, 237, 0.25);
       transform: scale(1.02);
     }
     .actions {
       display: flex;
-      gap: 14px;
-      align-items: center;
       justify-content: center;
+      gap: 14px;
       margin-top: 15px;
     }
     button {
@@ -89,14 +79,6 @@
     button.primary:hover {
       transform: translateY(-3px) scale(1.05);
       box-shadow: 0 10px 20px rgba(33, 147, 176, 0.4);
-    }
-    button.secondary {
-      background: rgba(255, 255, 255, 0.15);
-      color: #fff;
-    }
-    button.secondary:hover {
-      background: rgba(255, 255, 255, 0.25);
-      transform: translateY(-2px);
     }
     .message, .error-message {
       text-align: center;
@@ -128,7 +110,6 @@
           <input type="email" name="email" required />
         </div>
       </div>
-
       <div class="row">
         <div>
           <label>Phone</label>
@@ -139,7 +120,6 @@
           <input type="text" name="notes" />
         </div>
       </div>
-
       <div class="actions">
         <button type="submit" class="primary" id="submitBtn">🚀 Submit</button>
         <button type="reset" class="secondary">Clear</button>
@@ -149,36 +129,36 @@
   </div>
 
   <script>
-    const form = document.getElementById("regForm");
-    const statusEl = document.getElementById("status");
-    const submitBtn = document.getElementById("submitBtn");
-    const container = document.getElementById("container");
+    const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbxgF-mfzblxZw2yLLnBsWt2buxLywi78tAUX5Qj_aNueLWXKQsMD1LiVrjCJOMQBwzn0A/exec"; // <-- ilagay mo yung deploy URL
 
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxgF-mfzblxZw2yLLnBsWt2buxLywi78tAUX5Qj_aNueLWXKQsMD1LiVrjCJOMQBwzn0A/exec"; // paste your Apps Script Web App URL
+    const form = document.getElementById('regForm');
+    const statusEl = document.getElementById('status');
+    const container = document.getElementById('container');
+    const submitBtn = document.getElementById('submitBtn');
 
-    form.addEventListener("submit", async (e) => {
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      statusEl.textContent = "Submitting...";
+      statusEl.textContent = 'Submitting...';
       submitBtn.disabled = true;
 
       const data = Object.fromEntries(new FormData(form).entries());
 
       try {
-        const res = await fetch(SCRIPT_URL, {
+        const res = await fetch(WEBAPP_URL, {
           method: "POST",
           body: JSON.stringify(data),
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json" }
         });
         const result = await res.json();
 
         submitBtn.disabled = false;
-        statusEl.textContent = "";
+        statusEl.textContent = '';
 
-        if (result && result.status === "ok") {
+        if (result.status === "ok") {
           container.innerHTML = `
             <div class="message">
               <h2>✅ Registration Successful</h2>
-              <p>Please allow up to 24 hours for your email to be confirmed.<br>
+              <p>Your email will be confirmed within 24 hours.<br>
               The monitoring link will be sent to your inbox.</p>
             </div>
           `;
@@ -186,9 +166,7 @@
           showError(result.message || "Unknown server error.");
         }
       } catch (err) {
-        submitBtn.disabled = false;
-        statusEl.textContent = "";
-        showError(err.message);
+        showError(err.message || "Failed to connect.");
       }
     });
 
@@ -203,5 +181,4 @@
     }
   </script>
 </body>
-
 </html>
