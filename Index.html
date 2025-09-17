@@ -144,11 +144,14 @@
       const data = Object.fromEntries(new FormData(form).entries());
 
       try {
-        const res = await fetch(WEBAPP_URL, {
-          method: "POST",
-          body: JSON.stringify(data),
-          headers: { "Content-Type": "application/json" }
-        });
+       const res = await fetch(WEBAPP_URL, {
+  method: "POST",
+  mode: "cors",
+  redirect: "follow",
+  body: JSON.stringify(data),
+  headers: { "Content-Type": "application/json" }
+});
+
         const result = await res.json();
 
         submitBtn.disabled = false;
@@ -182,4 +185,5 @@
   </script>
 </body>
 </html>
+
 
