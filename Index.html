@@ -46,55 +46,59 @@
   <iframe name="submitFrame" id="submitFrame" style="display:none;"></iframe>
 
   <script>
-    const statusEl = document.getElementById('status');
-    const submitBtn = document.getElementById('submitBtn');
-    const form = document.getElementById('regForm');
+  const statusEl = document.getElementById('status');
+  const submitBtn = document.getElementById('submitBtn');
+  const form = document.getElementById('regForm');
 
-    // show submitting message when user clicks submit
-    form.addEventListener('submit', function () {
-      statusEl.textContent = '⏳ Submitting...';
-      submitBtn.disabled = true;
-    });
+  // show submitting message when user clicks submit
+  form.addEventListener('submit', function () {
+    statusEl.textContent = '⏳ Submitting...';
+    submitBtn.disabled = true;
+  });
 
-    // Listen for postMessage from the iframe (Apps Script response)
-    window.addEventListener('message', function(event) {
-      // optionally inspect event.origin if you want to restrict source
-      try {
-        const data = (typeof event.data === 'string') ? JSON.parse(event.data) : event.data;
-        if (!data || !data.status) return;
-        if (data.status === 'success') {
-          // show success UI
-          document.getElementById('container').innerHTML = `
-            <div class="message">
-              <h2>✅ Registration Successful</h2>
-              <p>Your spreadsheet has been created.<br>
-                 Link: <a href="${escapeHtml(data.sheetUrl)}" target="_blank">${escapeHtml(data.sheetUrl)}</a></p>
-            </div>
-          `;
-        } else {
-          document.getElementById('container').innerHTML = `
-            <div class="error-message">
-              <h2>❌ Registration Failed</h2>
-              <p>${escapeHtml(data.message || 'Unknown error')}</p>
-              <button onclick="window.location.reload()">🔄 Retry</button>
-            </div>
-          `;
-        }
-      } catch (err) {
-        statusEl.textContent = '❌ Unexpected response';
-        submitBtn.disabled = false;
+  // Listen for postMessage from the iframe (Apps Script response)
+  window.addEventListener('message', function(event) {
+    try {
+      const data = (typeof event.data === 'string') ? JSON.parse(event.data) : event.data;
+      if (!data || !data.status) return;
+
+      // ✅ Always reset status and enable button
+      statusEl.textContent = '';
+      submitBtn.disabled = false;
+
+      if (data.status === 'success') {
+        document.getElementById('container').innerHTML = `
+          <div class="message">
+            <h2>✅ Registration Successful</h2>
+            <p>Your spreadsheet has been created.<br>
+               Link: <a href="${escapeHtml(data.sheetUrl)}" target="_blank">${escapeHtml(data.sheetUrl)}</a></p>
+          </div>
+        `;
+      } else {
+        document.getElementById('container').innerHTML = `
+          <div class="error-message">
+            <h2>❌ Registration Failed</h2>
+            <p>${escapeHtml(data.message || 'Unknown error')}</p>
+            <button onclick="window.location.reload()">🔄 Retry</button>
+          </div>
+        `;
       }
-    });
-
-    // small helper to escape HTML for safety
-    function escapeHtml(str) {
-      if (!str) return '';
-      return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;');
+    } catch (err) {
+      statusEl.textContent = '❌ Unexpected response';
+      submitBtn.disabled = false;
     }
-  </script>
+  });
+
+  // helper
+  function escapeHtml(str) {
+    if (!str) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+</script>
 </body>
 </html>
+
