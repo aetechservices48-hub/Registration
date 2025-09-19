@@ -129,61 +129,42 @@
   </div>
 
   <script>
-    const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbzyP2tFx6uLUk1JkBFquiXMqlNb5H2Sy47HgLM27EHYVV3_vkWiUciTt3zavAZKrxo/exec"; // <-- ilagay mo yung deploy URL
+document.getElementById("regForm").addEventListener("submit", async function(e) {
+  e.preventDefault();
+  const form = e.target;
+  const status = document.getElementById("status");
 
-    const form = document.getElementById('regForm');
-    const statusEl = document.getElementById('status');
-    const container = document.getElementById('container');
-    const submitBtn = document.getElementById('submitBtn');
+  const data = {
+    name: form.name.value,
+    email: form.email.value,
+    phone: form.phone.value,
+    notes: form.notes.value
+  };
 
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      statusEl.textContent = 'Submitting...';
-      submitBtn.disabled = true;
+  status.innerText = "⏳ Submitting...";
 
-      const data = Object.fromEntries(new FormData(form).entries());
-
-      try {
-       const res = await fetch(WEBAPP_URL, {
-  method: "POST",
-  mode: "cors",
-  redirect: "follow",
-  body: JSON.stringify(data),
-  headers: { "Content-Type": "application/json" }
-});
-
-        const result = await res.json();
-
-        submitBtn.disabled = false;
-        statusEl.textContent = '';
-
-        if (result.status === "ok") {
-          container.innerHTML = `
-            <div class="message">
-              <h2>✅ Registration Successful</h2>
-              <p>Your email will be confirmed within 24 hours.<br>
-              The monitoring link will be sent to your inbox.</p>
-            </div>
-          `;
-        } else {
-          showError(result.message || "Unknown server error.");
-        }
-      } catch (err) {
-        showError(err.message || "Failed to connect.");
-      }
+  try {
+    const res = await fetch("https://script.google.com/macros/s/AKfycbwMilwk7ywD6m0pypWw2s8ZxRPxuyLrRVyoIEPPlYAbSYwHK_NTV7IpTZ4ZmbJ_qXiM1Q/exec", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data)
     });
 
-    function showError(msg) {
-      container.innerHTML = `
-        <div class="error-message">
-          <h2>❌ Registration Failed</h2>
-          <p>${msg}</p>
-          <button onclick="window.location.reload()" class="secondary" style="margin-top:15px;">🔄 Retry</button>
-        </div>
-      `;
+    const result = await res.json();
+
+    if (result.status === "success") {
+      status.innerText = "✅ Registered! Spreadsheet created: " + result.sheetUrl;
+    } else {
+      status.innerText = "❌ Error: " + result.message;
     }
-  </script>
+  } catch (err) {
+    status.innerText = "❌ Failed to submit: " + err.message;
+  }
+});
+</script>
+
 </body>
 </html>
+
 
 
